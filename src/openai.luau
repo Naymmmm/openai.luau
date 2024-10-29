@@ -62,7 +62,7 @@ function Context:Complete(Message: string)
 		}),
 	})
 	local messageresponse = net.jsonDecode(response.body)
-	return messageresponse.message
+	return messageresponse.choices[1].message.content
 end
 
 return openai
