@@ -30,39 +30,46 @@ Context.__index = Context
 
 -- End variables.
 
+-- Function to create a new context.
 function openai.new(Authorization: string, Model: string, SystemPrompt: string)
 	local self = setmetatable({}, Context)
-	self.Authorization = Authorization
-	self.Model = Model
+	self.Authorization = Authorization -- Assign the token to the context (probably)
+	self.Model = Model -- Assign the model.
 	if SystemPrompt ~= nil then
-		self.SystemPrompt = SystemPrompt
+		self.SystemPrompt = SystemPrompt -- Yuh.
 	else
-		self.SystemPrompt = "You are a completion created by the openai.luau API wrapper."
+		self.SystemPrompt = "You are a completion created by the openai.luau API wrapper." -- I think... uhh.
 	end
 	return self
 end
 
-function Context:Complete(Message: string)
-	local response = net.request({
+-- Completions function, I think.
+function Context:Complete(Message: string) -- You need a message, duh.
+	local response = net.request({ -- Create a new request, because we can.
 		url = "https://api.openai.com/v1/chat/completions",
-		method = "POST",
+		method = "POST", -- Post it.
 		headers = { ["Content-Type"] = "application/json", ["Authorization"] = "Bearer " .. self.Authorization },
-		body = net.jsonEncode({
+		body = net.jsonEncode({ -- Encode the thing.
 			model = self.Model,
 			messages = {
 				{
-					role = "system",
+					role = "system", -- System prompt.
 					content = self.SystemPrompt,
 				},
 				{
-					role = "user",
+					role = "user", -- User message.
 					content = Message,
 				},
 			},
 		}),
 	})
 	local messageresponse = net.jsonDecode(response.body)
-	return messageresponse.choices[1].message.content
+	local statuscode = net.jsonDecode(response.statusCode)
+	if statuscode ~= 200 then
+		warn("API returned " .. statuscode .. "!")
+	else
+		return messageresponse.choices[1].message.content
+	end
 end
 
 return openai
