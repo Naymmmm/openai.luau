@@ -19,12 +19,50 @@
 
 ]]
 
-self = {}
+openai = {}
 
 -- Begin variables section.
 
 local net = require("@lune/net")
 
+local Context = {}
+Context.__index = Context
+
 -- End variables.
 
-return self
+function openai.new(Authorization: string, Model: string, SystemPrompt: string)
+	local self = setmetatable({}, Context)
+	self.Authorization = Authorization
+	self.Model = Model
+	if SystemPrompt ~= nil then
+		self.SystemPrompt = SystemPrompt
+	else
+		self.SystemPrompt = "You are a completion created by the openai.luau API wrapper."
+	end
+	return self
+end
+
+function Context:Complete(Message: string)
+	local response = net.request({
+		url = "https://api.openai.com/v1/chat/completions",
+		method = "POST",
+		headers = { ["Content-Type"] = "application/json", ["Authorization"] = "Bearer " .. self.Authorization },
+		body = net.jsonEncode({
+			model = self.Model,
+			messages = {
+				{
+					role = "system",
+					content = self.SystemPrompt,
+				},
+				{
+					role = "user",
+					content = Message,
+				},
+			},
+		}),
+	})
+	local messageresponse = net.jsonDecode(response.body)
+	return messageresponse.message
+end
+
+return openai
