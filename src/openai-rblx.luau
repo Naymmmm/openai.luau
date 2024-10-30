@@ -42,16 +42,16 @@ function openai.new(Model: string, SystemPrompt: string)
 	return self
 end
 
--- Completions function, I think.
-function Context:Complete(Message: string, SecretKey: string) -- You need a message, duh.
-	local lsecret = HttpService:GetSecret(SecretKey)
-	local prefixedsecret = lsecret:AddPrefix("Bearer ")
-	local oneheader = { ["Authorization"] = prefixedsecret }
-	local body = HttpService:JSONEncode({ -- Encode the thing.
+-- de49dd9: refactor(rblx)!
+function Context:Complete(Message: string, SecretKey: string) -- You need a message, duh. (and a secret key)
+	local AuthSecret = HttpService:GetSecret(SecretKey)
+	local PrefixedSecret = AuthSecret:AddPrefix("Bearer ")
+	local Header = { ["Authorization"] = PrefixedSecret }
+	local RequestBody = HttpService:JSONEncode({ -- Encode the thing.
 		model = self.Model,
 		messages = {
 			{
-				role = "system", -- System prompt.
+				role = "system", -- when the imposter SUCKS at coding holy shit
 				content = self.SystemPrompt,
 			},
 			{
@@ -62,13 +62,14 @@ function Context:Complete(Message: string, SecretKey: string) -- You need a mess
 	})
 	local response = HttpService:PostAsync(
 		"https://api.openai.com/v1/chat/completions",
-		body,
-		Enum.HttpContentType.ApplicationJson,
+		RequestBody,
+		Enum.HttpContentType.ApplicationJson, -- yar
 		false,
-		oneheader
+		Header
 	)
-	local messageresponse = HttpService:JSONDecode(response)
-	return messageresponse.choices[1].message.content
+	-- TODO: refactor, feat error handling (got nuked lmao)
+	local messageresponse = HttpService:JSONDecode(response) -- for some reason it works, do not ask me
+	return messageresponse.choices[1].message.content -- TODO: unshittify
 end
 
 return openai
