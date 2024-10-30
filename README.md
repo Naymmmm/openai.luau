@@ -15,7 +15,7 @@ An OpenAI API wrapper for Lune.
 #### Create a new context
 
 ```lua
-  self.New(api_key: string, model: string, systemprompt: string)
+  self.New(api_key: string, model: string, systemprompt: string): Context
 ```
 
 | Parameter | Type     | Description                |
@@ -24,10 +24,10 @@ An OpenAI API wrapper for Lune.
 | `model` | `string` | The model to be used with the prompts. |
 | `systemprompt` | `string` | The system prompt to be sent to the completion. |
 
-#### Create a new context
+#### Chat with the Context
 
 ```lua
-  Context:Complete(message: string)
+  Context:Complete(message: string): response: string
 ```
 
 | Parameter | Type     | Description                |
