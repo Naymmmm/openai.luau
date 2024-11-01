@@ -67,8 +67,9 @@ function Context:Complete(Message: string) -- You need a message, duh.
 	local statuscode = net.jsonDecode(response.statusCode)
 	if statuscode ~= 200 then
 		warn("API returned " .. statuscode .. "!")
+		return statuscode, false
 	else
-		return messageresponse.choices[1].message.content
+		return messageresponse.choices[1].message.content, true
 	end
 end
 
