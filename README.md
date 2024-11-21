@@ -27,7 +27,7 @@ An OpenAI API wrapper for Lune.
 #### Chat with the Context
 
 ```lua
-  Context:Complete(message: string): response: string
+  Context:Complete(message: string): response: string, success: bool?
 ```
 
 | Parameter | Type     | Description                |
