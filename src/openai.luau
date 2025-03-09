@@ -91,7 +91,7 @@ local function HelperModerate(Context: RbxContext | ExternalContext, Input: stri
 	else
 		local net = require("@lune/net")
 		local response = net.request({
-			url = "https://api.openai.com/v1/chat/moderations",
+			url = "https://api.openai.com/v1/moderations",
 			method = "POST",
 			headers = { 
 				["Content-Type"] = "application/json",
