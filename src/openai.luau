@@ -16,14 +16,14 @@ type RbxContext = {
     ApiKey: Secret,
     Messages: {Message},
 	SystemPrompt: string,
-    Complete: (self: RbxContext, prompt: string, system: string) -> (string, boolean)
+    Complete: (self: RbxContext, prompt: string, model: string) -> (string, boolean, number)
 }
 
 type ExternalContext = {
     ApiKey: string,
     Messages: {Message},
 	SystemPrompt: string,
-    Complete: (self: ExternalContext, prompt: string, system: string) -> (string, boolean)
+    Complete: (self: ExternalContext, prompt: string, model: string) -> (string, boolean, number)
 }
 
 --[=[
@@ -33,21 +33,39 @@ type ExternalContext = {
 	@param Prompt string -- The prompt to complete
 	@return string, boolean, code -- The completion, whether it was successful, and the status code
 ]=]
-local function HelperComplete(Context: RbxContext | ExternalContext, Prompt: string)
+local function HelperComplete(Context: RbxContext | ExternalContext, Prompt: string, Model: string)
 	local isRbxContext = typeof(Context.ApiKey) == "Secret"
 	
 	if isRbxContext then
 		local HttpService = game:GetService("HttpService")
+		local data = HttpService:JSONEncode({
+			model = Model,
+			messages = Context.Messages,
+		})
+		local response = HttpService:PostAsync("https://api.openai.com/v1/chat/completions", data, Enum.HttpContentType.ApplicationJson, false, {
+			["Content-Type"] = "application/json",
+			["Authorization"] = Context.ApiKey:AddPrefix("Bearer ")
+		})
+		local decoded = HttpService:JSONDecode(response)
+
+		print(decoded)
+		return decoded.body.choices[1].message.content
 	else
 		local net = require("@lune/net")
 		local response = net.request({
-			url = "https://dummyjson.com/products/add",
+			url = "https://api.openai.com/v1/chat/completions",
 			method = "POST",
-			headers = { ["Content-Type"] = "application/json" },
+			headers = { 
+				["Content-Type"] = "application/json",
+				["Authorization"] = "Bearer "..Context.ApiKey
+			},
 			body = net.jsonEncode({
-				title = "Cool Pencil",
+				model = Model,
+				messages = Context.Messages,
 			})
 		})
+
+		return net.jsonDecode(response.body).choices[1].message.content, response.ok, response.statusCode
 	end
 end
 
@@ -63,11 +81,13 @@ function openai.New(ApiKey: string | Secret, SystemPrompt: string)
 
     local Context = {
         ApiKey = ApiKey,
-        Messages = {},
+        Messages = {
+			{ role = "system", content = SystemPrompt }
+		},
         SystemPrompt = SystemPrompt,
-        Complete = function(self, prompt: string)
-            return HelperComplete(self, prompt) -- Make sure HelperComplete exists
-        end
+        Complete = function(self, prompt: string, model: string)
+            return HelperComplete(self, prompt, model)
+        end,
     }
 
     return isRoblox and (Context :: RbxContext) or (Context :: ExternalContext)

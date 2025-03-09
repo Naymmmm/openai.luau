@@ -1,11 +1,9 @@
-local OpenAI = require("../src/openai")
-local Environment = require("../env.luau")
-local Context = OpenAI.new(Environment.ApiKey, "gpt-4o-mini", "You are an assistant.")
+local openai = require("../src/openai")
+local env = require("../env")
+local context = openai.New(env.ApiKey, "You are a test assistant formulated via OpenAI.luau")
+local prompt = "Who are you?"
 
-local result, status = Context:Complete("make 15 random sentences")
-
-if status then
-	print(result)
-else
-	warn("failed test lol, code: " .. result)
-end
+local result, success, code = context:Complete(prompt, "gpt-4o-mini")
+print("Result:", result)
+print("Success:", success)
+print("Code:", code)
