@@ -16,14 +16,16 @@ type RbxContext = {
     ApiKey: Secret,
     Messages: {Message},
 	SystemPrompt: string,
-    Complete: (self: RbxContext, prompt: string, model: string) -> (string, boolean, number)
+    Complete: (self: RbxContext, prompt: string, model: string) -> (string, boolean, number),
+	Moderate: (self: ExternalContext, input: string) -> (boolean)
 }
 
 type ExternalContext = {
     ApiKey: string,
     Messages: {Message},
 	SystemPrompt: string,
-    Complete: (self: ExternalContext, prompt: string, model: string) -> (string, boolean, number)
+    Complete: (self: ExternalContext, prompt: string, model: string) -> (string, boolean, number),
+	Moderate: (self: ExternalContext, input: string) -> (boolean)
 }
 
 --[=[
@@ -35,6 +37,7 @@ type ExternalContext = {
 ]=]
 local function HelperComplete(Context: RbxContext | ExternalContext, Prompt: string, Model: string)
 	local isRbxContext = typeof(Context.ApiKey) == "Secret"
+	table.insert(Context.Messages, { role = "user", content = Prompt })
 	
 	if isRbxContext then
 		local HttpService = game:GetService("HttpService")
@@ -69,6 +72,40 @@ local function HelperComplete(Context: RbxContext | ExternalContext, Prompt: str
 	end
 end
 
+local function HelperModerate(Context: RbxContext | ExternalContext, Input: string)
+	local isRbxContext = typeof(Context.ApiKey) == "Secret"
+
+	if isRbxContext then
+		local HttpService = game:GetService("HttpService")
+		local data = HttpService:JSONEncode({
+			input = Input
+		})
+		local response = HttpService:PostAsync("https://api.openai.com/v1/moderations", data, Enum.HttpContentType.ApplicationJson, false, {
+			["Content-Type"] = "application/json",
+			["Authorization"] = Context.ApiKey:AddPrefix("Bearer ")
+		})
+		local decoded = HttpService:JSONDecode(response)
+
+		print(decoded)
+		return decoded.body.results[1].flagged  
+	else
+		local net = require("@lune/net")
+		local response = net.request({
+			url = "https://api.openai.com/v1/chat/moderations",
+			method = "POST",
+			headers = { 
+				["Content-Type"] = "application/json",
+				["Authorization"] = "Bearer "..Context.ApiKey
+			},
+			body = net.jsonEncode({
+				input = Input
+			})
+		})
+
+		return net.jsonDecode(response.body).results[1].flagged
+	end
+end
+
 --[=[
 	This is a constructor for new contexts, to interact with the API
 
@@ -88,6 +125,9 @@ function openai.New(ApiKey: string | Secret, SystemPrompt: string)
         Complete = function(self, prompt: string, model: string)
             return HelperComplete(self, prompt, model)
         end,
+		Moderate = function(self, input: string)
+			return HelperModerate(self, input)
+		end
     }
 
     return isRoblox and (Context :: RbxContext) or (Context :: ExternalContext)
