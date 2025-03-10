@@ -52,7 +52,8 @@ local function HelperComplete(Context: RbxContext | ExternalContext, Prompt: str
 		local decoded = HttpService:JSONDecode(response)
 
 		print(decoded)
-		return decoded.body.choices[1].message.content
+		-- fix: turns out roblox shits out the body automatically
+		return decoded.choices[1].message.content, true, 200
 	else
 		local net = require("@lune/net")
 		local response = net.request({
@@ -87,7 +88,7 @@ local function HelperModerate(Context: RbxContext | ExternalContext, Input: stri
 		local decoded = HttpService:JSONDecode(response)
 
 		print(decoded)
-		return decoded.body.results[1].flagged  
+		return decoded.results[1].flagged  
 	else
 		local net = require("@lune/net")
 		local response = net.request({
