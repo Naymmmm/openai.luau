@@ -1,3 +1,4 @@
+--!nonstrict
 --[=[
 	@class openai.luau
 	(C) darwin/naymmm 2025
@@ -10,8 +11,21 @@
 openai = {}
 
 -- Types
+
+--[=[
+	Type for Messages
+
+	@type Message string | string
+	@within openai.luau
+]=]
 type Message = { role: string, content: string }
 
+--[=[
+	RbxContext type. Do not use in non Roblox runtimes
+
+	@type RbxContext Secret | {Message} | string | (self: ExternalContext, prompt: string, model: string) -> (string, boolean, number) | (self: ExternalContext, input: string) -> (boolean) 
+	@within openai.luau
+]=]
 type RbxContext = {
     ApiKey: Secret,
     Messages: {Message},
@@ -20,6 +34,12 @@ type RbxContext = {
 	Moderate: (self: ExternalContext, input: string) -> (boolean)
 }
 
+--[=[
+	ExternalContext type. Do not use in Roblox
+
+	@type ExternalContext string | {Message} | string | (self: ExternalContext, prompt: string, model: string) -> (string, boolean, number) | (self: ExternalContext, input: string) -> (boolean) 
+	@within openai.luau
+]=]
 type ExternalContext = {
     ApiKey: string,
     Messages: {Message},
@@ -31,6 +51,7 @@ type ExternalContext = {
 --[=[
 	This is a helper function for completions and should not be used directly
 
+	@within openai.luau
 	@private
 	@param Context RbxContext | ExternalContext -- The context to interact with
 	@param Prompt string -- The prompt to complete
@@ -74,6 +95,15 @@ local function HelperComplete(Context: RbxContext | ExternalContext, Prompt: str
 	end
 end
 
+--[=[
+	This is a helper function for moderation and should not be used directly
+
+	@within openai.luau
+	@private
+	@param Context RbxContext | ExternalContext -- The context to interact with
+	@param Input string -- The input to moderate
+	@return boolean -- Whether the input was flagged or not
+]=]
 local function HelperModerate(Context: RbxContext | ExternalContext, Input: string)
 	local isRbxContext = typeof(Context.ApiKey) == "Secret"
 
@@ -111,6 +141,7 @@ end
 --[=[
 	This is a constructor for new contexts, to interact with the API
 
+	@within openai.luau
 	@param ApiKey string | Secret -- API key for the OpenAI API or secret for Roblox
 	@param SystemPrompt string -- The system prompt to use for completions
 	@return Context RbxContext | ExternalContext -- The context to interact with
