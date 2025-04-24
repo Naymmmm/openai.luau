@@ -31,6 +31,7 @@ type ExternalContext = {
 --[=[
 	This is a helper function for completions and should not be used directly
 
+	@private
 	@param Context RbxContext | ExternalContext -- The context to interact with
 	@param Prompt string -- The prompt to complete
 	@return string, boolean, code -- The completion, whether it was successful, and the status code
