@@ -11,9 +11,9 @@
 </div>
 </div>
 
-<a><img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/Naymmmm/openai.luau"></a>
-<a><img alt="GitHub License" src="https://img.shields.io/github/license/Naymmmm/openai.luau"></a>
-<a><img alt="Static Badge" src="https://img.shields.io/badge/coffee%20is-tasty-purple"></a>
+<a><img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/Naymmmm/openai.luau"></img></a>
+<a><img alt="GitHub License" src="https://img.shields.io/github/license/Naymmmm/openai.luau"></img></a>
+<a><img alt="Static Badge" src="https://img.shields.io/badge/coffee%20is-tasty-purple"></img></a>
 
 openai.luau is a simple Luau library supporting Roblox & Lune!
 

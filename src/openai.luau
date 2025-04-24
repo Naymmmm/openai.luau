@@ -4,7 +4,7 @@
 	(C) darwin/naymmm 2025
 	Licensed under GNU-GPlv3
 
-	An API wrapper for OpenAI's GPT-3 API, written in Luau.
+	An API wrapper for OpenAI's Moderation and Completion API, written in Luau.
 	You can use this to interact with the API and get completions.
 ]=]
 
