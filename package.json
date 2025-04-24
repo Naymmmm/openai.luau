@@ -1,0 +1,25 @@
+{
+  "name": "openai.luau",
+  "version": "1.0.0",
+  "description": "<div align=\"center\" id=\"toc\">\r <p>\r \t<img align=\"right\" src=\"https://raw.githubusercontent.com/Naymmmm/openai.luau/v2/assets/logo.svg\" width=\"256\" alt=\"the-icon\"/>\r </p>\r <div align=\"left\">\r <ul style=\"list-style: none;\">\r   <summary>\r <h1>🤖 openai.luau</h1>\r   </summary>\r   </ul>\r </div>\r </div>",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Naymmmm/openai.luau.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Naymmmm/openai.luau/issues"
+  },
+  "homepage": "https://github.com/Naymmmm/openai.luau#readme",
+  "dependencies": {
+    "moonwave": "^1.3.0"
+  }
+}
