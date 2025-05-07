@@ -3,7 +3,7 @@
 	<img align="right" src="https://raw.githubusercontent.com/Naymmmm/openai.luau/v2/assets/logo.svg" width="256" alt="the-icon"/>
 </p>
 <div align="left">
-<ul style="list-style: none;">
+<ul style={{ listStyle: none }}>
   <summary>
 <h1>🤖 openai.luau</h1>
   </summary>
